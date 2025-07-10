@@ -1,1 +1,71 @@
+/*
+===============================
+Create Database and Schemas
+===============================
 
+Script Purpose:
+    This script creates a new database named "10k_data_warehouse" after checking if it already exists.
+    If the database exists, it is dropped and recreated. Additionally, the script sets up three schemas
+    within the database: "bronze", "silver", and "gold".
+
+WARNING:
+    Running this script will drop the entire "10k_data_warehouse" database if it exists.
+    All data in the database will be permanently deleted. Proceed with caution
+    and ensure you have proper backups before running the script.
+
+NOTE:
+    You need to run this script in two parts:
+    1. First, run the DROP/CREATE DATABASE commands while connected to a different database (like 'postgres')
+    2. Then connect to the new database and run the schema creation commands
+*/
+
+-- Part 1: Database Creation (run this while connected to 'postgres' database)
+-- Drop the database if it exists
+DROP DATABASE IF EXISTS "10k_data_warehouse";
+
+-- Create the '10k_data_warehouse' database
+CREATE DATABASE "10k_data_warehouse"
+    WITH 
+    OWNER = current_user
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TEMPLATE = template0
+    CONNECTION LIMIT = -1;
+
+-- Part 2: Schema Creation (run this after connecting to the '10k_data_warehouse' database)
+-- Connect to the database first: \c 10k_data_warehouse
+
+-- Create the bronze schema for raw data
+CREATE SCHEMA IF NOT EXISTS bronze;
+
+-- Create the silver schema for cleaned and transformed data  
+CREATE SCHEMA IF NOT EXISTS silver;
+
+-- Create the gold schema for business-ready data
+CREATE SCHEMA IF NOT EXISTS gold;
+
+-- Set search path to include all schemas
+SET search_path TO bronze, silver, gold, public;
+
+-- Grant usage on schemas to current user (optional, adjust as needed)
+GRANT USAGE ON SCHEMA bronze TO current_user;
+GRANT USAGE ON SCHEMA silver TO current_user;
+GRANT USAGE ON SCHEMA gold TO current_user;
+
+-- Grant create privileges on schemas to current user (optional, adjust as needed)
+GRANT CREATE ON SCHEMA bronze TO current_user;
+GRANT CREATE ON SCHEMA silver TO current_user;
+GRANT CREATE ON SCHEMA gold TO current_user;
+
+-- Verify schemas were created successfully
+SELECT 
+    schema_name,
+    schema_owner
+FROM information_schema.schemata 
+WHERE schema_name IN ('bronze', 'silver', 'gold')
+ORDER BY schema_name;
+
+-- Show current database and schemas
+SELECT current_database() as current_db;
+\dn
