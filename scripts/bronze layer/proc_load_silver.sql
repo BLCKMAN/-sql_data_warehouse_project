@@ -1,3 +1,38 @@
+-- ============================================================================
+-- Project: Data Warehouse ETL - Bronze to Silver Layer
+-- Author: [Your Name]
+-- Date: [Insert Date]
+-- Description:
+--   This SQL file defines two core PL/pgSQL functions:
+--
+--   1. bronze_to_silver_etl():
+--      - Extracts and transforms cleaned data from bronze staging tables.
+--      - Loads into normalized silver layer tables (crm_sales_details, crm_cust_info, etc.).
+--      - Includes data cleansing, deduplication, date parsing, and logic checks.
+--      - Logs processing times, record counts, and error messages for each step.
+--
+--   2. validate_bronze_data_quality():
+--      - Performs pre-ETL quality checks on bronze tables.
+--      - Validates data cleanliness (trimming), null checks, and calculation mismatches.
+--      - Logs issues found and time taken for each validation step.
+--
+-- Features:
+--   - Step-by-step logging with RAISE NOTICE for visibility
+--   - Error trapping with SQLERRM and SQLSTATE for debug info
+--   - Uses window functions, conditional casting, and string cleanup
+--   - Designed for repeatable, auditable ETL execution in warehouse environments
+--
+-- Usage:
+--   SELECT validate_bronze_data_quality();
+--   SELECT bronze_to_silver_etl();
+--
+-- Recommended Enhancements:
+--   - Add batch run ID tracking
+--   - Store logs in a persistent audit table
+--   - Add constraints to silver layer for data integrity enforcement
+-- ============================================================================
+
+
 -- Enhanced Bronze to Silver ETL Function with Comprehensive Logging and Error Handling
 CREATE OR REPLACE FUNCTION bronze_to_silver_etl()
 RETURNS void AS $$
